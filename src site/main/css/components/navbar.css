@@ -1,0 +1,40 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    padding: 12px 40px;
+    background-color: rgba(17, 17, 17, 0.95); /* тёмный полупрозрачный */
+    backdrop-filter: blur(6px); /* эффект стекла */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.navbar-main {
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    color: #ffffff; /* белый для контраста */
+}
+
+.navbar-menu {
+    display: flex;
+    list-style: none;
+    gap: 30px; /* равномерные промежутки */
+}
+
+.navbar-menu a {
+    font-size: 18px;
+    text-decoration: none;
+    color: #cecece;
+    transition: color 0.3s, border-bottom 0.3s;
+    padding: 5px 0;
+}
+
+.navbar-menu a:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
