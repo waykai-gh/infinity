@@ -1,0 +1,22 @@
+{
+  "name": "src-bot",
+  "version": "1.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/index.ts",
+    "build": "tsc",
+    "start:prod": "node dist/index.js"
+  },
+  "dependencies": {
+    "@grammyjs/hydrate": "^1.6.0",
+    "dotenv": "^17.2.3",
+    "grammy": "^1.38.3",
+    "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
