@@ -5,6 +5,7 @@ import { hydrate } from '@grammyjs/hydrate';
 import { inlineKeyboard } from 'telegraf/markup';
 import { vpn, infinityAI} from './commands/exports.js';
 import { subscrice } from './commands/subcrise.js';
+import { xorHandler } from './services/ai-service/aiCommands/xor.js';
 
 
 const botToken = process.env.BOT_TOKEN;
@@ -61,6 +62,8 @@ bot.callbackQuery('vpn', vpn);
 bot.callbackQuery('infinityAI', infinityAI);
 
 bot.callbackQuery('subscrice', subscrice);
+
+bot.command('xor', xorHandler);
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;
