@@ -3,9 +3,14 @@ services:
     build: 
       context: ./backend/ai-service-backend
       dockerfile: Dockerfile
+    env_file:
+      - ./backend/ai-service-backend/.env
     container_name: ai-service-backend
-    ports:
-      - "3000:3000"
+    depends_on:
+      - ollama
+    networks:
+      - app-network
+    restart: unless-stopped
   bot:
     build:
       context: ./bot
@@ -13,27 +18,43 @@ services:
     container_name: telegram-bot
     env_file:
       - ./bot/.env
-    # Если нужно "пробросить" порт для webhook,
-    # то указываем, например: "3000:3000".
-    # В нашем случае используется long polling, так что доступ к порту не требуется,
-    # но вот пример вам на будущее:
-    #ports:
-    #  - '3000:3000'
+    networks:
+      - app-network
+    restart: unless-stopped  
+
+  xor-bot:
+    build:
+      context: ./xor-bot
+      dockerfile: Dockerfile
+    container_name: telegram-xor-bot
+    env_file:
+      - ./xor-bot/.env
     depends_on:
       - ai-service-backend
     networks:
-      - app-network
+      - app-network    
 
-#  mongo:
-#    image: mongo:6
-#    container_name: mongo-db
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: rootpassword
-#    ports:
-#      - '27017:27017'
-#    networks:
-#      - app-network
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    # Для CPU-деплоя достаточно так. Если есть GPU и нужна поддержка:
+    # runtime: nvidia
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - app-network
+    # Не публикуем 11434 наружу
+    # ports:
+    #   - "11434:11434"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+volumes:
+  ollama:
 
 networks:
   app-network:

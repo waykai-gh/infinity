@@ -3,20 +3,18 @@ import { GrammyError, HttpError, InlineKeyboard, Bot} from 'grammy';
 import { MyContext } from './types.js'; 
 import { hydrate } from '@grammyjs/hydrate';
 import { inlineKeyboard } from 'telegraf/markup';
-import { vpn, infinityAI} from './commands/exports.js';
-import { subscrice } from './commands/subcrise.js';
-import { xorHandler } from './services/ai-service/aiCommands/xor.js';
+import { vpn, profile, subscrice, help} from './commands/exports.js';
 
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
   throw new Error('BOT_TOKEN is not defined');
 }
+const bot = new Bot<MyContext>(botToken);
 
-export const bot = new Bot<MyContext>(botToken);
-const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').text('Поддержка', 'help').text('Подписка', 'subscrice');
+const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Поддержка', 'help').text('Подписка', 'subscrice');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const menuKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('Ollama Model (not aviable yet)', 'ollama').text('AI-VPN-Service (not aviable yet)', 'vpn').row().text('< На главную', 'back');
+const menuKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('AI-VPN-Service (not aviable yet)', 'vpn').row().text('< На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
@@ -29,12 +27,7 @@ bot.command('start', async (ctx) => {
 });
 
 // Обработчик команды /help
-bot.callbackQuery('help', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Напишите ваше обращение, вам ответит первый освободившийся специалист!', {
-    reply_markup: backKeyboard,
-  });
-  await ctx.answerCallbackQuery();
-});
+bot.callbackQuery('help', help);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -50,20 +43,12 @@ bot.callbackQuery('services', async (ctx) => {
   await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery('profile', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Профиль\n ', {
-    reply_markup: backKeyboard
-  });
-  await ctx.answerCallbackQuery();
-});
+bot.callbackQuery('profile', profile);
 
 bot.callbackQuery('vpn', vpn);
 
-bot.callbackQuery('infinityAI', infinityAI);
-
 bot.callbackQuery('subscrice', subscrice);
 
-bot.command('xor', xorHandler);
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;

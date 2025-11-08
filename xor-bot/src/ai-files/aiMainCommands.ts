@@ -1,4 +1,4 @@
-import { MyContext } from "../../../types.js";
+import { MyContext } from "../types.js";
 import { InlineKeyboard, CallbackQueryContext, } from "grammy";
 
 
