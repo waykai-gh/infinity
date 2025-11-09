@@ -2,6 +2,7 @@ services:
   ai-service-backend:
     build: 
       context: ./backend/ai-service-backend
+      network: host
       dockerfile: Dockerfile
     env_file:
       - ./backend/ai-service-backend/.env
