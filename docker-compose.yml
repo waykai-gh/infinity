@@ -23,7 +23,23 @@ services:
     networks:
       - app-network
     restart: unless-stopped  
-
+  db:
+    image: postgres:16
+    container_name: vpn-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: vpn
+      POSTGRES_USER: vpn_user
+      POSTGRES_PASSWORD: vpn_password
+    ports:
+      - "5432:5432"   # можно убрать наружу, если не нужен доступ извне
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vpn_user -d vpn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   xor-bot:
     build:
       context: ./xor-bot
@@ -36,7 +52,6 @@ services:
       - ai-service-backend
     networks:
       - app-network    
-
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
@@ -57,6 +72,7 @@ services:
       timeout: 3s
       retries: 20
 volumes:
+  db_data:
   ollama:
 
 networks:

@@ -1,20 +1,32 @@
-FROM node:20.5.0
+# 1. Билд-стейдж
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-# Копируем только package files для кэширования
+# Установить зависимости
 COPY package*.json ./
+RUN npm ci
 
-ENV NODE_ENV=development
-
-# Используем npm install для dev (включая devDependencies)
-RUN npm install
-
-# Копируем tsconfig и исходники
+# Скопировать исходники
 COPY tsconfig.json ./
 COPY src ./src
 
-# Билдим для проверки, что всё компилируется
+# Собрать TypeScript в JS
 RUN npm run build
 
-# Запускаем в dev режиме с hot-reload
-CMD ["npm", "run", "dev"]
+# 2. Рантайм-стейдж
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Установить только production-зависимости
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Скопировать собранный код из builder
+COPY --from=builder /app/dist ./dist
+
+# Переменные окружения будут приходить из docker-compose
+ENV NODE_ENV=production
+
+CMD ["node", "dist/index.js"]

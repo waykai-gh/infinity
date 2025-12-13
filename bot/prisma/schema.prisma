@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Таблица: пользователи Telegram
+model User {
+  id          Int       @id @default(autoincrement())
+  telegramId  BigInt    @unique
+  username    String?   
+  plan        String    @default("free")      // free / premium
+  status      String    @default("active")    // active / banned
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  vpnKeys     VpnKey[]  // одного user → много ключей
+}
+
+// Таблица: VPN-сервера
+model Server {
+  id          Int       @id @default(autoincrement())
+  hostname    String
+  ip          String    @unique
+  location    String    // KZ, NL
+  portFree    Int       @default(8443)
+  portPremium Int       @default(9443)
+  status      String    @default("active")
+  vpnKeys     VpnKey[]
+}
+
+// Таблица: выданные VPN-ключи
+model VpnKey {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  server      Server    @relation(fields: [serverId], references: [id])
+  serverId    Int
+  uuid        String    @unique
+  shortId     String
+  sni         String
+  port        Int
+  status      String    @default("active")  // active / revoked
+  trafficUsed BigInt    @default(0)         // байты
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+}

@@ -3,7 +3,8 @@ import { GrammyError, HttpError, InlineKeyboard, Bot} from 'grammy';
 import { MyContext } from './types.js'; 
 import { hydrate } from '@grammyjs/hydrate';
 import { inlineKeyboard } from 'telegraf/markup';
-import { vpn, profile, subscrice, help} from './commands/exports.js';
+import { profile, subscrice, help} from './commands/exports.js';
+import { keyCommand } from './commands/vpnCommands.js';
 
 
 const botToken = process.env.BOT_TOKEN;
@@ -12,22 +13,25 @@ if (!botToken) {
 }
 const bot = new Bot<MyContext>(botToken);
 
+//Клавиатуры меню
 const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Поддержка', 'help').text('Подписка', 'subscrice');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const menuKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('AI-VPN-Service (not aviable yet)', 'vpn').row().text('< На главную', 'back');
+const menuKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('AI-VPN-Service', 'vpn').row().text('< На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
 
 // Обработчик команды /start
 bot.command('start', async (ctx) => {
-  await ctx.reply('Вы успешно зарегистрированы!\n', {
+  await ctx.reply('Вас приветствует Infinity!\nВыберите один из пунктов меню:', {
     reply_markup: mainKeyboard,
   });
 });
 
 // Обработчик команды /help
 bot.callbackQuery('help', help);
+
+bot.command('key', keyCommand);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -37,18 +41,16 @@ bot.callbackQuery('back', async (ctx) => {
 });
 
 bot.callbackQuery('services', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Выберите модель!', {
+  await ctx.callbackQuery.message?.editText('Выберите интересующий сервис:', {
     reply_markup: menuKeyboard
   });
   await ctx.answerCallbackQuery();
 });
-
+//---------------------------------------------------
 bot.callbackQuery('profile', profile);
 
-bot.callbackQuery('vpn', vpn);
-
-bot.callbackQuery('subscrice', subscrice);
-
+//bot.callbackQuery(/^buyProduct–\d+$/, payments); //WHAT THIS???
+//---------------------------------------------------
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;

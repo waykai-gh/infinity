@@ -5,7 +5,7 @@ export const profile = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('Профиль');
   
     ctx.callbackQuery.message?.editText(
-      `Здравствуйте, ${ctx.from.first_name}.\nВы в разделе "Профиль".\nВаш ID: ${ctx.from.id}\n`,
+      `Здравствуйте, ${ctx.from.first_name}.\nВаш ID: ${ctx.from.id}\n`,
       {
         reply_markup: new InlineKeyboard().text('< На главную', 'back').text('Услуги', 'services').row().text('Подписка','subcrise'),
       });
