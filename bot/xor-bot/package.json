@@ -1,0 +1,30 @@
+{
+  "name": "xor-bot",
+  "version": "1.0.0",
+  "description": "infinity ai service",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --exec tsx src/index.ts",
+    "start:prod": "node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "dependencies": {
+    "@grammyjs/hydrate": "^1.6.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "grammy": "^1.38.3",
+    "hydrate": "^1.0.0",
+    "node-fetch": "^3.3.2",
+    "telegraf": "^4.16.3",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",    
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,10 +1,8 @@
 import 'dotenv/config';
-import { GrammyError, HttpError, InlineKeyboard, Bot} from 'grammy';
+import { GrammyError, HttpError, InlineKeyboard, Bot } from 'grammy';
 import { MyContext } from './types.js'; 
 import { hydrate } from '@grammyjs/hydrate';
-import { inlineKeyboard } from 'telegraf/markup';
-import { profile, subscrice, help} from './commands/exports.js';
-import { keyCommand } from './commands/vpnCommands.js';
+import { profile, subscrice, infinityAI, payments} from './commands/exports.js';
 
 
 const botToken = process.env.BOT_TOKEN;
@@ -13,25 +11,33 @@ if (!botToken) {
 }
 const bot = new Bot<MyContext>(botToken);
 
+bot.api.setMyCommands([
+  {
+    command: 'start',
+    description: 'Нажмите для регистрации',
+  },
+  {
+    command: 'menu',
+    description: 'Меню и услуги',
+  },
+]);
+
 //Клавиатуры меню
-const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Поддержка', 'help').text('Подписка', 'subscrice');
+const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const menuKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('AI-VPN-Service', 'vpn').row().text('< На главную', 'back');
+const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('VPN-Service', 'vpn').row().text('< На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
 
 // Обработчик команды /start
 bot.command('start', async (ctx) => {
-  await ctx.reply('Вас приветствует Infinity!\nВыберите один из пунктов меню:', {
+  await ctx.reply('Регистрация прошла успешно! Добро пожаловать в Infinity!\nВыберите один из пунктов меню:', {
     reply_markup: mainKeyboard,
   });
 });
 
-// Обработчик команды /help
-bot.callbackQuery('help', help);
-
-bot.command('key', keyCommand);
+bot.callbackQuery('subscrice', subscrice);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -40,17 +46,25 @@ bot.callbackQuery('back', async (ctx) => {
   await ctx.answerCallbackQuery();
 });
 
+bot.command('menu', async (ctx) => {
+  await ctx.reply('Главное меню', {
+    reply_markup: mainKeyboard
+  });
+});
+
 bot.callbackQuery('services', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Выберите интересующий сервис:', {
-    reply_markup: menuKeyboard
+    reply_markup: serviceKeyboard
   });
   await ctx.answerCallbackQuery();
 });
-//---------------------------------------------------
+
 bot.callbackQuery('profile', profile);
 
-//bot.callbackQuery(/^buyProduct–\d+$/, payments); //WHAT THIS???
-//---------------------------------------------------
+bot.callbackQuery('infinityAI', infinityAI);
+
+bot.callbackQuery('payments', payments);
+
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;

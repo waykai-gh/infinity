@@ -1,0 +1,79 @@
+services:
+  ai-service-backend:
+    build: 
+      context: ./backend/ai-service-backend
+      network: host
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/ai-service-backend/.env
+    container_name: ai-service-backend
+    depends_on:
+      - ollama
+    networks:
+      - app-network
+    restart: unless-stopped
+  bot:
+    build:
+      context: ./bot
+      network: host
+      dockerfile: Dockerfile
+    container_name: telegram-bot
+    env_file:
+      - ./bot/.env
+    networks:
+      - app-network
+    restart: unless-stopped  
+  db:
+    image: postgres:16
+    container_name: vpn-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: vpn
+      POSTGRES_USER: vpn_user
+      POSTGRES_PASSWORD: vpn_password
+    ports:
+      - "5432:5432"   # можно убрать наружу, если не нужен доступ извне
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vpn_user -d vpn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  xor-bot:
+    build:
+      context: ./xor-bot
+      network: host
+      dockerfile: Dockerfile
+    container_name: telegram-xor-bot
+    env_file:
+      - ./xor-bot/.env
+    depends_on:
+      - ai-service-backend
+    networks:
+      - app-network    
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    # Для CPU-деплоя достаточно так. Если есть GPU и нужна поддержка:
+    # runtime: nvidia
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - app-network
+    # Не публикуем 11434 наружу
+    # ports:
+    #   - "11434:11434"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+volumes:
+  db_data:
+  ollama:
+
+networks:
+  app-network:

@@ -19,13 +19,13 @@ export const productsCommand = (ctx: CallbackQueryContext<MyContext>) => {
       return InlineKeyboard.text(product.name, `buyProduct–${product.id}`)
     })
 
-    const keyboard = InlineKeyboard.from([
+    const backToMenu = InlineKeyboard.from([
       keyboardButtonRows,
       [InlineKeyboard.text('<--Назад', 'BackToMenu')]
     ])
   
     ctx.callbackQuery.message?.editText(massageText, {
-        reply_markup: keyboard,
+        reply_markup: backToMenu,
       }
     );
   }

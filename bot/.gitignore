@@ -1,0 +1,19 @@
+node_modules/
+dist/
+/bot/.env
+/xor-bot/.env
+/backend/ai-service-backend/.env
+*.log
+*.DS_Store
+.idea/
+.vscode/
+.cursor/
+.continue/
+/.env
+/.env.local
+/.env.*.local
+
+# не игнорируем шаблоны
+!/bot/.env.example
+!/xor-bot/.env.example
+!/backend/ai-service-backend/.env.example
