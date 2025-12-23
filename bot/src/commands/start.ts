@@ -1,5 +1,27 @@
-import { MyContext } from "../types.js";
-import { InlineKeyboard, CallbackQueryContext } from "grammy";
+import { Context } from 'grammy';
+import { UserService } from '../services/user-service/userService.js';
+import { InlineKeyboard } from "grammy";
 
-export const start = async(ctx: CallbackQueryContext<MyContext>) =>{
+export async function start(ctx: Context) {
+  if (!ctx.from) return;
+
+  // /start или /start ABCD1234
+  const args = ctx.match?.toString().trim() || '';
+  const referralCode = args || null;
+
+  const user = await UserService.findOrCreateByTelegram(
+    ctx.from.id,
+    ctx.from.username,
+    ctx.from.language_code,
+    referralCode,
+  );
+
+  const refLink = `https://t.me/${ctx.me.username}?start=${user.ref_code}`;
+
+  await ctx.reply(
+    `Добро пожаловать в Infinity, ${ctx.from.first_name}!\nТвой план: ${user.plan}.\nТвой реф-код: ${user.ref_code}.\nРеф-ссылка: ${refLink}`,
+    {
+        reply_markup: new InlineKeyboard().text('На главную >', 'back'),
+    }
+  );
 };

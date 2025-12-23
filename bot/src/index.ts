@@ -2,8 +2,7 @@ import 'dotenv/config';
 import { GrammyError, HttpError, InlineKeyboard, Bot } from 'grammy';
 import { MyContext } from './types.js'; 
 import { hydrate } from '@grammyjs/hydrate';
-import { profile, subscrice, infinityAI, payments} from './commands/exports.js';
-
+import { profile, subscrice, infinityAI, payments, start} from './commands/exports.js';
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
@@ -31,13 +30,15 @@ const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').t
 bot.use(hydrate());
 
 // Обработчик команды /start
-bot.command('start', async (ctx) => {
-  await ctx.reply('Регистрация прошла успешно! Добро пожаловать в Infinity!\nВыберите один из пунктов меню:', {
-    reply_markup: mainKeyboard,
-  });
-});
+bot.command('start', start);
 
 bot.callbackQuery('subscrice', subscrice);
+
+bot.callbackQuery('profile', profile);
+
+bot.callbackQuery('infinityAI', infinityAI);
+
+bot.callbackQuery('payments', payments);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -58,12 +59,6 @@ bot.callbackQuery('services', async (ctx) => {
   });
   await ctx.answerCallbackQuery();
 });
-
-bot.callbackQuery('profile', profile);
-
-bot.callbackQuery('infinityAI', infinityAI);
-
-bot.callbackQuery('payments', payments);
 
 // Обработка ошибок согласно документации
 bot.catch((err) => {
