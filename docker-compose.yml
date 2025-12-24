@@ -1,11 +1,9 @@
 services:
   ai-service-backend:
-    build: 
-      context: ./backend/ai-service-backend
-      dockerfile: Dockerfile
-    env_file:
-      - ./backend/ai-service-backend/.env
+    image: ai-service-backend
     container_name: ai-service-backend
+    env_file:
+      - ./backend/ai-service-backend/.env    
     network_mode: host
     depends_on:
       - ollama
@@ -41,9 +39,7 @@ services:
       timeout: 5s
       retries: 5
   xor-bot:
-    build:
-      context: ./xor-bot
-      dockerfile: Dockerfile
+    image: xor-bot
     container_name: telegram-xor-bot
     env_file:
       - ./xor-bot/.env
