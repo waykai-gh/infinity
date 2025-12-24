@@ -21,7 +21,7 @@ WORKDIR /app
 
 # Установить только production-зависимости
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Скопировать собранный код из builder
 COPY --from=builder /app/dist ./dist
