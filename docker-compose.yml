@@ -57,10 +57,8 @@ services:
       - app-network    
   ollama:
     image: ollama/ollama:latest
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     container_name: ollama
+    network_mode: host
     # Для CPU-деплоя достаточно так. Если есть GPU и нужна поддержка:
     # runtime: nvidia
     # environment:
