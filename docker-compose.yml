@@ -12,9 +12,7 @@ services:
       - db
     restart: unless-stopped
   bot:
-    build:
-      context: ./bot
-      dockerfile: Dockerfile
+    image: telegram-bot 
     container_name: telegram-bot
     env_file:
       - ./bot/.env
