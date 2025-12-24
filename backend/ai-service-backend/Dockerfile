@@ -1,14 +1,28 @@
-FROM node:20
-WORKDIR /usr/src/app
+# 1. Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
 
+# Зависимости (prod + dev)
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
+# Исходники и конфиг TS
 COPY tsconfig.json ./
 COPY src ./src
 
-RUN npm run build
+# Компиляция TS → JS (локальный tsc из node_modules)
+RUN ./node_modules/.bin/tsc
 
-EXPOSE 3000
+# 2. Runtime stage
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package*.json ./
+# Только продовые зависимости
+RUN npm install --omit=dev
+
+# Готовый JS-код
+COPY --from=builder /app/dist ./dist
+
+ENV NODE_ENV=production
 CMD ["node", "dist/index.js"]
-

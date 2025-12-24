@@ -1,20 +1,28 @@
-FROM node:20.5.0
+# 1. Build stage
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Копируем только package files для кэширования
+# Зависимости (prod + dev)
 COPY package*.json ./
-
-ENV NODE_ENV=development
-
-# Используем npm install для dev (включая devDependencies)
 RUN npm install
 
-# Копируем tsconfig и исходники
+# Исходники и конфиг TS
 COPY tsconfig.json ./
 COPY src ./src
 
-# Билдим для проверки, что всё компилируется
-RUN npm run build
+# Компиляция TS → JS (локальный tsc из node_modules)
+RUN ./node_modules/.bin/tsc
 
-# Запускаем в dev режиме с hot-reload
-CMD ["npm", "run", "dev"]
+# 2. Runtime stage
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package*.json ./
+# Только продовые зависимости
+RUN npm install --omit=dev
+
+# Готовый JS-код
+COPY --from=builder /app/dist ./dist
+
+ENV NODE_ENV=production
+CMD ["node", "dist/index.js"]
