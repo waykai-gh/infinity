@@ -12,7 +12,7 @@ COPY tsconfig.json ./
 COPY src ./src
 
 # Собрать TypeScript в JS
-RUN npm run build
+RUN npx tsc
 
 # 2. Рантайм-стейдж
 FROM node:20-alpine
