@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Установить зависимости
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Скопировать исходники
 COPY tsconfig.json ./

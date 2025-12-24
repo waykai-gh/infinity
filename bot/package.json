@@ -4,6 +4,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
+    "postinstall": "echo 'skip prisma generate in docker build'",
     "build": "tsc",
     "dev": "nodemon --exec tsx src/index.ts",
     "start:prod": "node dist/index.js"

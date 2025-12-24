@@ -2,27 +2,25 @@ services:
   ai-service-backend:
     build: 
       context: ./backend/ai-service-backend
-      network: host
-      network_mode: host
       dockerfile: Dockerfile
     env_file:
       - ./backend/ai-service-backend/.env
     container_name: ai-service-backend
+    network_mode: host
     depends_on:
       - ollama
-    networks:
-      - app-network
+      - db
     restart: unless-stopped
   bot:
     build:
       context: ./bot
-      network: host
       dockerfile: Dockerfile
     container_name: telegram-bot
     env_file:
       - ./bot/.env
-    networks:
-      - app-network
+    network_mode: host
+    depends_on:
+      - db
     restart: unless-stopped  
   db:
     image: postgres:16
@@ -47,15 +45,13 @@ services:
   xor-bot:
     build:
       context: ./xor-bot
-      network: host
       dockerfile: Dockerfile
     container_name: telegram-xor-bot
     env_file:
       - ./xor-bot/.env
+    network_mode: host
     depends_on:
-      - ai-service-backend
-    networks:
-      - app-network    
+      - ai-service-backend 
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
@@ -66,8 +62,6 @@ services:
     #   - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - ollama:/root/.ollama
-    networks:
-      - app-network
     # Не публикуем 11434 наружу
     # ports:
     #   - "11434:11434"
@@ -82,3 +76,4 @@ volumes:
 
 networks:
   app-network:
+    driver: bridge
