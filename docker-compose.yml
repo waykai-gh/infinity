@@ -27,8 +27,8 @@ services:
     restart: always
     environment:
       POSTGRES_DB: vpn
-      POSTGRES_USER: vpn_user
-      POSTGRES_PASSWORD: vpn_password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"   # можно убрать наружу, если не нужен доступ извне
     volumes:
