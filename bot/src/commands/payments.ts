@@ -6,7 +6,7 @@ export const payments = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('payments');
   
     ctx.callbackQuery.message?.editText(
-      `Вы сможете оплатить подписку чуть позже через Юкасса или telegram Star...`,
+      `Вы сможете оплатить подписку чуть позже...`,
       {
         reply_markup: new InlineKeyboard().text('< На главную', 'back'),
       });

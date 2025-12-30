@@ -14,11 +14,14 @@ export async function subscrice(ctx: CallbackQueryContext<MyContext>) {
       ctx.from.username,
     );
 
-    // 2. Создать ключ уже по user.id
-    const link = await VpnService.createKeyForUser(ctx.from.id);
+    // Формируем subscription URL
+    const baseUrl = process.env.SUBSCRIPTION_BASE_URL || 'https://infinity-ecosys.ru';
+    const subscriptionUrl = `${baseUrl}/subscription/${ctx.from.id}`;
 
     await ctx.callbackQuery.message?.editText(
-      `Ваша подписка:\n\nВаш VLESS key:\n\`${link}\``,
+      `Ваша подписка:\n\n` +
+      `Subscription URL:\n\`${subscriptionUrl}\`\n\n` +
+      `Скопируйте эту ссылку и добавьте в ваш VPN клиент как subscription.`,
       {
         parse_mode: 'Markdown',
         link_preview_options: { is_disabled: true },
@@ -26,7 +29,7 @@ export async function subscrice(ctx: CallbackQueryContext<MyContext>) {
       });
   } catch (e) {
     console.error(e);
-    await ctx.reply('Не удалось создать ключ. Обратитесь в техническую поддержку: @InfinitySup_bot.');
+    await ctx.reply('Не удалось создать подписку. Обратитесь в техническую поддержку: @InfinitySup_bot.');
   }
   await ctx.answerCallbackQuery();
 }
