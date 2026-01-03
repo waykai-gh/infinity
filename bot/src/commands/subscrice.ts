@@ -21,7 +21,7 @@ export async function subscrice(ctx: CallbackQueryContext<MyContext>) {
     await ctx.callbackQuery.message?.editText(
       `Ваша подписка:\n\n` +
       `Subscription URL:\n\`${subscriptionUrl}\`\n\n` +
-      `Скопируйте эту ссылку и добавьте в ваш VPN клиент как subscription.`,
+      `Скопируйте эту ссылку и добавьте в ваш клиент как subscription.`,
       {
         parse_mode: 'Markdown',
         link_preview_options: { is_disabled: true },

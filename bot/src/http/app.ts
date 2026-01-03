@@ -1,7 +1,14 @@
 import express from 'express';
 import { VpnService } from '../services/vpn-service/vpnService.js';
+import xrayRoutes from './xrayRoutes.js';
 
 const app = express();
+
+// Добавь middleware для парсинга JSON (если еще нет)
+app.use(express.json());
+
+// Подключаем роуты Xray API
+app.use('/api/xray', xrayRoutes);
 
 // Subscription endpoint
 app.get('/subscription/:telegramId', async (req, res) => {
@@ -12,10 +19,7 @@ app.get('/subscription/:telegramId', async (req, res) => {
     }
 
     const subscription = await VpnService.generateSubscription(telegramId);
-    
-    // Декодируем base64 и отправляем (клиент сам закодирует обратно)
     const decoded = Buffer.from(subscription, 'base64').toString('utf-8');
-    
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="subscription.txt"');
     res.send(decoded);
