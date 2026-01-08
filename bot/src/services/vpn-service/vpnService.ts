@@ -2,97 +2,85 @@
 import { pool } from '../db-service/db.js';
 import crypto from 'crypto';
 
-const LOCATION_CONFIG: Record<string, { name: string; flag: string}> = {
+interface VpnServer {
+  id: number;
+  ip: string;
+  port: number;
+  location: 'KZ' | 'NL' | 'KR';
+  status: string;
+  publicKey: string
+}
+
+interface VpnUser {
+  id: number;
+  telegramId: number;
+}
+
+const LOCATION_CONFIG: Record<'KZ' | 'NL' | 'KR', { name: string; flag: string}> = {
   KZ: {name: 'Kazakhstan', flag: '🇰🇿'},
   NL: {name: 'Netherlands', flag: '🇳🇱'},
   KR: {name: 'South Korea', flag: '🇰🇷'}
 };
 
 export class VpnService {
+
+  private static neededSNI(location: 'KZ' | 'NL' | 'KR'): string {
+    switch (location) {
+      case 'KZ':
+        return 'aikyn.kz';
+      case 'KR':
+        return 'images.apple.com';
+      case 'NL':
+        return 'gitlab.com';
+    }
+  }
+
   static generateShortId(): string {
     return crypto.randomBytes(8).toString('hex'); // 16 hex
   }
-
+  
   private static generateVlessLink(
-    server: any,
-    user: any,
+    server: VpnServer,
     uuid: string,
     shortId: string
   ): string {
-    const sni = user.plan === 'premium' ? 'github.com' : 'aikyn.kz';
-    const port = server.port; // используем только port, без portFree/portPremium
-    
-    const location = server.location || 'KZ';
-    const locationConfig = LOCATION_CONFIG[location] || LOCATION_CONFIG.KZ;
+
+    const locationConfig = LOCATION_CONFIG[server.location];
+    if (!locationConfig) {
+      throw new Error(`Missing location config for: ${server.location}`);
+    }
+
+    const sni = this.neededSNI(server.location);
     const locationName = locationConfig.name;
     const locationFlag = locationConfig.flag;
 
     return (
-      `vless://${uuid}@${server.ip}:${port}?` +
-      `encryption=none&security=reality&sni=${sni}&fp=chrome&pbk=${process.env.PUBLIC_KEY!}` +
-      `&sid=${shortId}&type=tcp&flow=xtls-rprx-vision#${locationName}${locationFlag}`
+      `vless://${uuid}@${server.ip}:${server.port}?` 
+      +
+      `encryption=none&security=reality&sni=${sni}&fp=chrome&pbk=${server.publicKey}` 
+      +
+      `&sid=${shortId}&type=tcp&flow=xtls-rprx-vision#${locationName} | ${locationFlag}`
     );
   }
 
-  static async createKeyForUser(telegramId: number) {
-    const client = await pool.connect();
-    try {
-      // 1. находим пользователя
-      const userRes = await client.query(
-        'SELECT * FROM "User" WHERE "telegramId" = $1',
-        [telegramId.toString()]
-      );
-      const user = userRes.rows[0];
-      if (!user) throw new Error('User not found');
-
-      // 2. берём первый активный сервер
-      const serverRes = await client.query(
-        'SELECT * FROM "Server" WHERE status = $1 LIMIT 1',
-        ['active']
-      );
-      const server = serverRes.rows[0];
-      if (!server) throw new Error('No active servers');
-
-      // 3. генерируем UUID и shortId
-      const uuid = crypto.randomUUID();
-      const shortId = this.generateShortId();
-      const vlessLink = this.generateVlessLink(server, user, uuid, shortId);
-
-      // 4. сохраняем в VpnKey
-      await client.query(
-        `INSERT INTO "VpnKey"
-         ("userId","serverId", uuid, "shortId", sni, port)
-         VALUES ($1,$2,$3,$4,$5,$6)`,
-        [
-          user.id,
-          server.id,
-          uuid,
-          shortId,
-          user.plan === 'premium' ? 'github.com' : 'aikyn.kz',
-          server.port
-        ]
-      );
-
-      return vlessLink;
-    } finally {
-      client.release();
-    }
-  }
-
   static async generateSubscription(telegramId: number): Promise<string> {
+    
     const client = await pool.connect();
     try {
       // 1. Находим пользователя
       const userRes = await client.query(
         'SELECT * FROM "User" WHERE "telegramId" = $1',
-        [telegramId.toString()]
+        [telegramId]
       );
       const user = userRes.rows[0];
       if (!user) throw new Error('User not found');
   
-      // 2. Получаем все активные серверы
-      const serversRes = await client.query(
-        'SELECT * FROM "Server" WHERE status = $1 ORDER BY location, id',
+      /* ✅ ВАЖНО: Добавляем publicKey в SELECT!  
+      *!Сейчас мы берем любой активный сервер, но в будущем мы должны выбрать сервер по его загруженности, тут есть пространтсов чтобы это реализовать!
+      * Тут есть пространтсов чтобы реализовать это, но сейчас мы не будем этого делать!
+      */
+      const serversRes = await client.query<VpnServer>(
+        'SELECT id, ip, port, location, status, publicKey FROM "Server" WHERE status = $1 ORDER BY location, id',
         ['active']
       );
       const servers = serversRes.rows;
@@ -109,7 +97,6 @@ export class VpnService {
            ORDER BY "createdAt" DESC LIMIT 1`,
           [user.id, server.id]
         );
-  
         let uuid: string;
         let shortId: string;
   
@@ -133,7 +120,7 @@ export class VpnService {
               server.id,
               uuid,
               shortId,
-              user.plan === 'premium' ? 'github.com' : 'aikyn.kz',
+              this.neededSNI(server.location),
               server.port,
             ]
           );
@@ -142,7 +129,7 @@ export class VpnService {
         
   
         // Генерируем VLESS ссылку (используем существующий или новый ключ)
-        const vlessLink = this.generateVlessLink(server, user, uuid, shortId);
+        const vlessLink = this.generateVlessLink(server, uuid, shortId);
         vlessLinks.push(vlessLink);
       }
   
@@ -151,6 +138,9 @@ export class VpnService {
       const subscriptionBase64 = Buffer.from(subscriptionContent).toString('base64');
   
       return subscriptionBase64;
+    } catch (error) {
+      console.error('Error generating subscrition:', error);
+      throw error;
     } finally {
       client.release();
     }

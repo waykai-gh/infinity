@@ -1160,8 +1160,8 @@ openssl rand -hex 8  # ShortID
 - **Xray документация:** https://xtls.github.io/
 - **RealiTLScanner:** https://github.com/XTLS/RealiTLScanner
 - **grammY (Telegram бот):** https://grammy.dev/
-- **V2rayN (Windows клиент):** https://github.com/2dust/v2rayN
-- **NekoBox (Android):** https://github.com/MatsuriDayo/NekoBoxForAndroid
+- **V2rayN (Android клиент):** https://github.com/2dust/v2rayN
+- **NekoBox (Windows):** https://github.com/MatsuriDayo/NekoBoxForAndroid
 
 ---
 

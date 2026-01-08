@@ -4,6 +4,7 @@ import { MyContext } from './types.js';
 import { hydrate } from '@grammyjs/hydrate';
 import { profile, subscrice, infinityAI, payments, start} from './commands/exports.js';
 import './http/index.js';
+import DataBaseIndex from './services/db-service/index.js';
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
@@ -25,7 +26,7 @@ bot.api.setMyCommands([
 //Клавиатуры меню
 const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('Free internet access', 'vpn').row().text('< На главную', 'back');
+const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('Free internet access', 'internetAcces').row().text('< На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
@@ -40,6 +41,8 @@ bot.callbackQuery('profile', profile);
 bot.callbackQuery('infinityAI', infinityAI);
 
 bot.callbackQuery('payments', payments);
+
+bot.callbackQuery('internetAcces', subscrice);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -87,3 +90,4 @@ async function startBot() {
 }
 
 startBot();
+DataBaseIndex();

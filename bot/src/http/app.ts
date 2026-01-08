@@ -4,7 +4,7 @@ import xrayRoutes from './xrayRoutes.js';
 
 const app = express();
 
-// Добавь middleware для парсинга JSON (если еще нет)
+// middleware для парсинга JSON (если еще нет)
 app.use(express.json());
 
 // Подключаем роуты Xray API

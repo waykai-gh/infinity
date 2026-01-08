@@ -26,6 +26,7 @@ export class UserService {
 
       if (existing.rows.length > 0) {
         const user = existing.rows[0];
+        console.log(user);
 
         await client.query(
           `UPDATE "User"
