@@ -4,7 +4,6 @@ import { MyContext } from './types.js';
 import { hydrate } from '@grammyjs/hydrate';
 import { profile, subscrice, infinityAI, payments, start} from './commands/exports.js';
 import './http/index.js';
-import DataBaseIndex from './services/db-service/index.js';
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
@@ -90,4 +89,3 @@ async function startBot() {
 }
 
 startBot();
-DataBaseIndex();
