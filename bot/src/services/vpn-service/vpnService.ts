@@ -64,7 +64,7 @@ export class VpnService {
   }
 
   static async generateSubscription(telegramId: number): Promise<string> {
-    
+
     const client = await pool.connect();
     try {
       // 1. Находим пользователя
@@ -76,11 +76,11 @@ export class VpnService {
       if (!user) throw new Error('User not found');
   
       /* ✅ ВАЖНО: Добавляем publicKey в SELECT!  
-      *!Сейчас мы берем любой активный сервер, но в будущем мы должны выбрать сервер по его загруженности, тут есть пространтсов чтобы это реализовать!
-      * Тут есть пространтсов чтобы реализовать это, но сейчас мы не будем этого делать!
+      *!Сейчас мы берем любой активный сервер, но в будущем мы должны выбрать сервер по его загруженности!
+      * Тут есть пространство чтобы реализовать это, но сейчас мы не будем этого делать!
       */
       const serversRes = await client.query<VpnServer>(
-        'SELECT id, ip, port, location, status, publicKey FROM "Server" WHERE status = $1 ORDER BY location, id',
+        'SELECT id, ip, port, location, status, "publicKey" FROM "Server" WHERE status = $1 ORDER BY location, id',
         ['active']
       );
       const servers = serversRes.rows;
