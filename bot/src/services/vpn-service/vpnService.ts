@@ -80,7 +80,7 @@ export class VpnService {
       * Тут есть пространство чтобы реализовать это, но сейчас мы не будем этого делать!
       */
       const serversRes = await client.query<VpnServer>(
-        'SELECT id, ip, port, location, status, "publicKey" FROM "Server" WHERE status = $1 ORDER BY location, id',
+        'SELECT id, ip, port, location, status, publickey as "publicKey" FROM "Server" WHERE status = $1 ORDER BY location, id',
         ['active']
       );
       const servers = serversRes.rows;
