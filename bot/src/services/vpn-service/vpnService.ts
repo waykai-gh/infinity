@@ -27,7 +27,7 @@ export class VpnService {
   private static neededSNI(location: 'KZ' | 'NL' | 'KR'): string {
     switch (location) {
       case 'KZ':
-        return 'aikyn.kz';
+        return 'www.aikyn.kz';
       case 'KR':
         return 'images.apple.com';
       case 'NL':
