@@ -1,6 +1,8 @@
 // src/services/vpn-service/vpnService.ts
 import { pool } from '../db-service/db.js';
 import crypto from 'crypto';
+import { addUserToAllServers } from '../xray-service/multiServerXrayService.js';
+
 
 interface VpnServer {
   id: number;
@@ -141,6 +143,36 @@ export class VpnService {
     } catch (error) {
       console.error('Error generating subscrition:', error);
       throw error;
+    } finally {
+      client.release();
+    }
+  }
+   /**
+   * Генерирует подписку И добавляет пользователя на Xray серверы
+   */
+   static async generateSubscriptionAndActivate(telegramId: number): Promise<string> {
+    const client = await pool.connect();
+    
+    try {
+      // 1. Генерируем подписку
+      const subscriptionBase64 = await this.generateSubscription(telegramId);
+
+      // 2. Получаем ID пользователя
+      const userRes = await client.query(
+        'SELECT id FROM "User" WHERE "telegramId" = $1',
+        [telegramId]
+      );
+      
+      if (userRes.rows.length === 0) {
+        throw new Error('User not found');
+      }
+      
+      const userId = userRes.rows[0].id;
+
+      // 3. Добавляем на все серверы
+      await addUserToAllServers(userId);
+
+      return subscriptionBase64;
     } finally {
       client.release();
     }

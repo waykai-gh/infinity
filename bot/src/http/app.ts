@@ -1,6 +1,7 @@
 import express from 'express';
 import { VpnService } from '../services/vpn-service/vpnService.js';
 import xrayRoutes from './xrayRoutes.js';
+  
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.get('/subscription/:telegramId', async (req, res) => {
       return res.status(400).send('Invalid telegram ID');
     }
 
-    const subscription = await VpnService.generateSubscription(telegramId);
+    const subscription = await VpnService.generateSubscriptionAndActivate(telegramId);
     const decoded = Buffer.from(subscription, 'base64').toString('utf-8');
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="subscription.txt"');
