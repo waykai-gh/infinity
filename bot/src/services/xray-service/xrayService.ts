@@ -1,7 +1,8 @@
 import { getXtlsClient } from './xtlsClient.js';
-import crypto from 'crypto';
+
 
 const INBOUND_TAG = process.env.XRAY_INBOUND_TAG || 'vless-inbound';
+
 
 export interface AddUserParams {
   uuid: string;
@@ -9,9 +10,11 @@ export interface AddUserParams {
   level?: number;
 }
 
+
 export interface RemoveUserParams {
   email: string;
 }
+
 
 /**
  * Добавляет нового VLESS пользователя в Xray
@@ -19,6 +22,7 @@ export interface RemoveUserParams {
 export const addUserToXray = async (params: AddUserParams): Promise<void> => {
   const { uuid, email, level = 0 } = params;
   const client = getXtlsClient();
+
 
   try {
     // Правильная структура из документации
@@ -30,10 +34,12 @@ export const addUserToXray = async (params: AddUserParams): Promise<void> => {
       level: level,
     });
 
+
     // Response имеет поле isOk (не success)
     if (!response.isOk) {
       throw new Error(response.message || 'Failed to add user');
     }
+
 
     console.log(`[XrayService] User added: ${email} (UUID: ${uuid})`);
   } catch (error: any) {
@@ -42,6 +48,7 @@ export const addUserToXray = async (params: AddUserParams): Promise<void> => {
   }
 };
 
+
 /**
  * Удаляет пользователя из Xray
  */
@@ -49,13 +56,16 @@ export const removeUserFromXray = async (params: RemoveUserParams): Promise<void
   const { email } = params;
   const client = getXtlsClient();
 
+
   try {
     // removeUser принимает два аргумента: tag и username
     const response = await client.handler.removeUser(INBOUND_TAG, email);
 
+
     if (!response.isOk) {
       throw new Error(response.message || 'Failed to remove user');
     }
+
 
     console.log(`[XrayService] User removed: ${email}`);
   } catch (error: any) {
@@ -63,6 +73,7 @@ export const removeUserFromXray = async (params: RemoveUserParams): Promise<void
     throw new Error(`Xray API error: ${error.message}`);
   }
 };
+
 
 /**
  * Получает статистику пользователя (uplink/downlink)
@@ -72,13 +83,16 @@ export const getUserStats = async (
 ): Promise<{ uplink: number; downlink: number }> => {
   const client = getXtlsClient();
 
+
   try {
     const response = await client.stats.getUserStats(email, false);
+
 
     if (!response.isOk || !response.data) {
       console.warn(`[XrayService] Stats not found for ${email}, returning zeros`);
       return { uplink: 0, downlink: 0 };
     }
+
 
     // response.data содержит статистику пользователя
     return {
@@ -91,19 +105,23 @@ export const getUserStats = async (
   }
 };
 
+
 /**
  * Сбрасывает статистику пользователя
  */
 export const resetUserStats = async (email: string): Promise<void> => {
   const client = getXtlsClient();
 
+
   try {
     // reset = true сбрасывает счетчики
     const response = await client.stats.getUserStats(email, true);
 
+
     if (!response.isOk) {
       throw new Error(response.message || 'Failed to reset stats');
     }
+
 
     console.log(`[XrayService] Stats reset for user: ${email}`);
   } catch (error: any) {
@@ -112,18 +130,22 @@ export const resetUserStats = async (email: string): Promise<void> => {
   }
 };
 
+
 /**
  * Получает список всех пользователей в inbound
  */
 export const getInboundUsers = async (): Promise<any[]> => {
   const client = getXtlsClient();
 
+
   try {
     const response = await client.handler.getInboundUsers(INBOUND_TAG);
+
 
     if (!response.isOk || !response.data) {
       throw new Error(response.message || 'Failed to get users');
     }
+
 
     return response.data.users || [];
   } catch (error: any) {
@@ -132,12 +154,6 @@ export const getInboundUsers = async (): Promise<any[]> => {
   }
 };
 
-/**
- * Генерирует shortId (16 hex символов)
- */
-export const generateShortId = (): string => {
-  return crypto.randomBytes(8).toString('hex');
-};
 
 /**
  * Генерирует VLESS-ссылку для клиента
@@ -162,6 +178,7 @@ export const generateVlessLink = (params: {
     locationName = 'Server',
     locationFlag = '🌐',
   } = params;
+
 
   return (
     `vless://${uuid}@${serverIp}:${serverPort}?` +

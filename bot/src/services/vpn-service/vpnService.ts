@@ -4,19 +4,23 @@ import crypto from 'crypto';
 import { addUserToAllServers } from '../xray-service/multiServerXrayService.js';
 
 
+
 interface VpnServer {
   id: number;
   ip: string;
   port: number;
   location: 'KZ' | 'NL' | 'KR';
   status: string;
-  publicKey: string
+  publicKey: string;
+  shortId: string; // ✅ ДОБАВЛЕНО
 }
+
 
 interface VpnUser {
   id: number;
   telegramId: number;
 }
+
 
 const LOCATION_CONFIG: Record<'KZ' | 'NL' | 'KR', { name: string; flag: string}> = {
   KZ: {name: 'Kazakhstan', flag: '🇰🇿'},
@@ -24,7 +28,9 @@ const LOCATION_CONFIG: Record<'KZ' | 'NL' | 'KR', { name: string; flag: string}>
   KR: {name: 'South Korea', flag: '🇰🇷'}
 };
 
+
 export class VpnService {
+
 
   private static neededSNI(location: 'KZ' | 'NL' | 'KR'): string {
     switch (location) {
@@ -36,10 +42,6 @@ export class VpnService {
         return 'gitlab.com';
     }
   }
-
-  static generateShortId(): string {
-    return crypto.randomBytes(8).toString('hex'); // 16 hex
-  }
   
   private static generateVlessLink(
     server: VpnServer,
@@ -47,14 +49,17 @@ export class VpnService {
     shortId: string
   ): string {
 
+
     const locationConfig = LOCATION_CONFIG[server.location];
     if (!locationConfig) {
       throw new Error(`Missing location config for: ${server.location}`);
     }
 
+
     const sni = this.neededSNI(server.location);
     const locationName = locationConfig.name;
     const locationFlag = locationConfig.flag;
+
 
     return (
       `vless://${uuid}@${server.ip}:${server.port}?` 
@@ -65,7 +70,9 @@ export class VpnService {
     );
   }
 
+
   static async generateSubscription(telegramId: number): Promise<string> {
+
 
     const client = await pool.connect();
     try {
@@ -77,12 +84,12 @@ export class VpnService {
       const user = userRes.rows[0];
       if (!user) throw new Error('User not found');
   
-      /* ✅ ВАЖНО: Добавляем publicKey в SELECT!  
+      /* ✅ ВАЖНО: Добавляем publicKey и shortId в SELECT!  
       *!Сейчас мы берем любой активный сервер, но в будущем мы должны выбрать сервер по его загруженности!
       * Тут есть пространство чтобы реализовать это, но сейчас мы не будем этого делать!
       */
-      const serversRes = await client.query<VpnServer>(
-        'SELECT id, ip, port, location, status, publickey as "publicKey" FROM "Server" WHERE status = $1 ORDER BY location, id',
+      const serversRes = await client.query(
+        'SELECT id, ip, port, location, status, publickey as "publicKey", "shortId" FROM "Server" WHERE status = $1 ORDER BY location, id',
         ['active']
       );
       const servers = serversRes.rows;
@@ -92,6 +99,11 @@ export class VpnService {
       const vlessLinks: string[] = [];
       
       for (const server of servers) {
+        // ✅ ПРОВЕРКА: Убедимся что у сервера есть shortId
+        if (!server.shortId) {
+          throw new Error(`Server ${server.location} (id: ${server.id}) has no shortId configured in database`);
+        }
+
         // ИСПРАВЛЕНИЕ: Проверяем, есть ли уже ключ для этого пользователя и сервера
         const existingKeyRes = await client.query(
           `SELECT * FROM "VpnKey" 
@@ -108,9 +120,9 @@ export class VpnService {
           uuid = existingKey.uuid;
           shortId = existingKey.shortId;
         } else {
-          // Создаем новый ключ только если его нет
+          // ✅ ИЗМЕНЕНО: Берём shortId из сервера
           uuid = crypto.randomUUID();
-          shortId = this.generateShortId();
+          shortId = server.shortId;
   
           // Сохраняем новый ключ в БД
           await client.query(
@@ -127,8 +139,6 @@ export class VpnService {
             ]
           );
         }
-
-        
   
         // Генерируем VLESS ссылку (используем существующий или новый ключ)
         const vlessLink = this.generateVlessLink(server, uuid, shortId);
@@ -157,6 +167,7 @@ export class VpnService {
       // 1. Генерируем подписку
       const subscriptionBase64 = await this.generateSubscription(telegramId);
 
+
       // 2. Получаем ID пользователя
       const userRes = await client.query(
         'SELECT id FROM "User" WHERE "telegramId" = $1',
@@ -169,8 +180,10 @@ export class VpnService {
       
       const userId = userRes.rows[0].id;
 
+
       // 3. Добавляем на все серверы
       await addUserToAllServers(userId);
+
 
       return subscriptionBase64;
     } finally {
