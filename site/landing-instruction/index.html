@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкция по подключению к VPN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .toc {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .toc h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .toc a {
+            display: block;
+            padding: 12px 15px;
+            background: #2d2d2d;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            transition: background 0.2s;
+        }
+
+        .toc a:hover {
+            background: #444;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #bb86fc;
+        }
+
+        .download-guide {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .download-guide h3 {
+            margin-bottom: 10px;
+            color: #03dac6;
+        }
+
+        .steps {
+            margin-bottom: 25px;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .step:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: #bb86fc;
+            border-radius: 50%;
+        }
+
+        .images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .img-container {
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .img-container img {
+            width: 100%;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .img-container:hover img {
+            transform: scale(1.02);
+        }
+
+        .img-caption {
+            background: #2d2d2d;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .toc ul {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Инструкция по подключению к VPN</h1>
+            <p>Полная инструкция для всех операционных систем</p>
+        </header>
+
+        <div class="toc">
+            <h2>Оглавление</h2>
+            <ul>
+                <li><a href="#windows">Windows</a></li>
+                <li><a href="#linux">Linux</a></li>
+                <li><a href="#android">Android</a></li>
+                <li><a href="#ios">iOS</a></li>
+            </ul>
+        </div>
+
+        <!-- Windows Section -->
+        <div id="windows" class="section">
+            <h2>Windows</h2>
+            
+            <div class="download-guide">
+                <h3>Скачать клиент</h3>
+                <p>Для Windows используйте приложение NekoBox:</p>
+                <p>1. Перейдите в <a href="https://github.com/MatsuriDayo/NekoBoxForWindows" target="_blank" style="color:#03dac6">официальный репозиторий NekoBox</a></p>
+                <p>2. Скачайте последнюю версию в разделе Releases</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">Запустите NekoBox и перейдите во вкладку "Сервер"</div>
+                <div class="step">Нажмите на "+" в правом верхнем углу</div>
+                <div class="step">Выберите "Импорт из буфера обмена" или "Импорт из URL"</div>
+                <div class="step">Вставьте предоставленную ссылку и нажмите "OK"</div>
+                <div class="step">Выберите сервер из списка и нажмите "Запустить"</div>
+            </div>
+
+            <div class="images">
+                <div class="img-container">
+                    <img src="./img/firstStepWin.jpg" alt="Окно импорта URL в NekoBox">
+                    <div class="img-caption">Импорт конфигурации через URL</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/2StepWin.jpg" alt="Список серверов в NekoBox">
+                    <div class="img-caption">Добавление нового профиля</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/lastStepWin.jpg" alt="Активация сервера в NekoBox">
+                    <div class="img-caption">Запуск подключения</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linux Section -->
+        <div id="linux" class="section">
+            <h2>Linux</h2>
+            
+            <div class="download-guide">
+                <h3>Скачать клиент</h3>
+                <p>Для Linux используйте приложение NekoBox:</p>
+                <p>1. Перейдите в <a href="https://github.com/MatsuriDayo/NekoBoxForLinux" target="_blank" style="color:#03dac6">официальный репозиторий NekoBox</a></p>
+                <p>2. Скачайте подходящий пакет для вашей системы</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">Запустите NekoBox и перейдите во вкладку "Сервер"</div>
+                <div class="step">Нажмите на "+" в правом верхнем углу</div>
+                <div class="step">Выберите "Импорт из буфера обмена" или "Импорт из URL"</div>
+                <div class="step">Вставьте предоставленную ссылку и нажмите "OK"</div>
+                <div class="step">Выберите сервер из списка и нажмите "Запустить"</div>
+            </div>
+
+            <div class="images">
+                <div class="img-container">
+                    <img src="./img/firstStepWin.jpg" alt="Окно импорта URL в NekoBox">
+                    <div class="img-caption">Импорт конфигурации через URL</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/2StepWin.jpg" alt="Список серверов в NekoBox">
+                    <div class="img-caption">Добавление нового профиля</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/lastStepWin.jpg" alt="Активация сервера в NekoBox">
+                    <div class="img-caption">Запуск подключения</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Android Section -->
+        <div id="android" class="section">
+            <h2>Android</h2>
+            
+            <div class="download-guide">
+                <h3>Скачать клиент</h3>
+                <p>Для Android используйте приложение v2rayTun:</p>
+                <p>1. Установите приложение из <a href="https://play.google.com/store/apps/details?id=com.v2ray.tun" target="_blank" style="color:#03dac6">Google Play Store</a></p>
+                <p>2. Или загрузите APK с официального сайта</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">Откройте приложение v2rayTun</div>
+                <div class="step">Нажмите на "+" в правом верхнем углу</div>
+                <div class="step">Выберите "Импорт из буфера обмена" или "Импорт из QR-кода"</div>
+                <div class="step">Вставьте предоставленную ссылку и нажмите "OK"</div>
+                <div class="step">Выберите сервер из списка и нажмите кнопку подключения</div>
+            </div>
+
+            <div class="images">
+                <div class="img-container">
+                    <img src="./img/firststepPhone.jpg" alt="Интерфейс v2rayTun на Android">
+                    <div class="img-caption">Главный экран приложения</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/2stepPhone.jpg" alt="Импорт конфигурации в v2rayTun">
+                    <div class="img-caption">Добавление новой конфигурации</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- iOS Section -->
+        <div id="ios" class="section">
+            <h2>iOS</h2>
+            
+            <div class="download-guide">
+                <h3>Скачать клиент</h3>
+                <p>Для iOS используйте приложение v2rayTun:</p>
+                <p>1. Установите приложение из <a href="https://apps.apple.com/app/v2raytun/id6474512788" target="_blank" style="color:#03dac6">App Store</a></p>
+            </div>
+
+            <div class="steps">
+                <div class="step">Откройте приложение v2rayTun</div>
+                <div class="step">Нажмите на "+" в правом верхнем углу</div>
+                <div class="step">Выберите "Импорт из буфера обмена" или "Импорт из QR-кода"</div>
+                <div class="step">Вставьте предоставленную ссылку и нажмите "OK"</div>
+                <div class="step">Выберите сервер из списка и нажмите кнопку подключения</div>
+            </div>
+
+            <div class="images">
+                <div class="img-container">
+                    <img src="./img/firststepPhone.jpg" alt="Интерфейс v2rayTun на iOS">
+                    <div class="img-caption">Главный экран приложения</div>
+                </div>
+                <div class="img-container">
+                    <img src="./img/2stepPhone.jpg" alt="Импорт конфигурации в v2rayTun">
+                    <div class="img-caption">Добавление новой конфигурации</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 VPN-инструкция. Все скриншоты взяты из официальных приложений.</p>
+        </footer>
+    </div>
+</body>
+</html>

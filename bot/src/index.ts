@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { GrammyError, HttpError, InlineKeyboard, Bot } from 'grammy';
 import { MyContext } from './types.js'; 
 import { hydrate } from '@grammyjs/hydrate';
-import { profile, subscrice, infinityAI, payments, start} from './commands/exports.js';
+import { profile, subscrice, infinityAI, payments, start, instruction} from './commands/exports.js';
 import './http/index.js';
 
 const botToken = process.env.BOT_TOKEN;
@@ -23,7 +23,7 @@ bot.api.setMyCommands([
 ]);
 
 //Клавиатуры меню
-const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments');
+const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments').row().text('Инструкции', 'instruction');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
 const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('Free internet access', 'internetAcces').row().text('< На главную', 'back');
 
@@ -62,6 +62,12 @@ bot.callbackQuery('services', async (ctx) => {
   });
   await ctx.answerCallbackQuery();
 });
+
+bot.callbackQuery('instruction', instruction);
+
+bot.on('message', async (ctx) => {
+  await ctx.reply('Не знаю такой команды(');
+})
 
 // Обработка ошибок согласно документации
 bot.catch((err) => {

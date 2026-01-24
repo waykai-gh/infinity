@@ -1,6 +1,5 @@
 import { MyContext } from "../types.js";
 import { InlineKeyboard, CallbackQueryContext } from "grammy";
-import { Telegraf } from 'telegraf';
 
 export const payments = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('payments');
