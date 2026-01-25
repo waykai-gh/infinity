@@ -12,7 +12,7 @@ export const instruction = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('instruction');
   
     ctx.callbackQuery.message?.editText(
-      `all instruction: https:/infinity-ecosys.ru`,
+      `all instruction: https://infinity-ecosys.ru`,
       {
         reply_markup: new InlineKeyboard().text('< На главную', 'back'),
       });
