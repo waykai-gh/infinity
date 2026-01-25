@@ -4,3 +4,23 @@ body {
     background-image: linear-gradient(to right, #2b2b2b -90%, #000000 100%);
 }
 
+.main-page-greet {
+    text-align: center;
+    color: azure;
+}
+
+#main-page-greet {
+    position: relative;
+    right: 90px;
+    top: 40px;
+}
+#main-page-greet-slash {
+    position: relative;
+    right: 28px;
+}
+
+#mission {
+    position: relative;
+    left: 90px;
+    bottom: 40px;
+}

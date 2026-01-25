@@ -25,7 +25,7 @@ bot.api.setMyCommands([
 //Клавиатуры меню
 const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments').row().text('Инструкции', 'instruction');
 const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const serviceKeyboard = new InlineKeyboard().text('Infinity AI', 'infinityAI').text('Free internet access', 'internetAcces').row().text('< На главную', 'back');
+const serviceKeyboard = new InlineKeyboard().row().text('Infinity AI', 'infinityAI').row().text('Free internet access', 'internetAcces').row().text('Site', 'site').row().text('< На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
@@ -42,6 +42,8 @@ bot.callbackQuery('infinityAI', infinityAI);
 bot.callbackQuery('payments', payments);
 
 bot.callbackQuery('internetAcces', subscrice);
+
+bot.callbackQuery('instruction', instruction);
 
 bot.callbackQuery('back', async (ctx) => {
   await ctx.callbackQuery.message?.editText('Вы на главной странице', {
@@ -63,12 +65,12 @@ bot.callbackQuery('services', async (ctx) => {
   await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery('instruction', instruction);
-
-bot.on('message', async (ctx) => {
-  await ctx.reply('Не знаю такой команды(');
-})
-
+bot.callbackQuery('site', async (ctx) => {
+  await ctx.callbackQuery.message?.editText('Наш сайт: https://infinity-ecosys.ru', {
+    reply_markup: backKeyboard
+  });
+  await ctx.answerCallbackQuery();
+});
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;
