@@ -19,9 +19,9 @@ export async function start(ctx: Context) {
   const refLink = `https://t.me/${ctx.me.username}?start=${user.ref_code}`;
 
   await ctx.reply(
-    `Добро пожаловать в Infinity, ${ctx.from.first_name}!\nТвой план: ${user.plan}.\nТвой реф-код: ${user.ref_code}.\nРеф-ссылка: ${refLink}`,
+    `✳️Добро пожаловать в Infinity, ${ctx.from.first_name}!\n💎Твой план: ${user.plan}.\n🔗🫶Твой реф-код: ${user.ref_code}.\n🔗🫶Реф-ссылка: ${refLink}`,
     {
-        reply_markup: new InlineKeyboard().text('На главную >', 'back'),
+        reply_markup: new InlineKeyboard().text('На главную ➡️', 'back'),
     }
   );
 };

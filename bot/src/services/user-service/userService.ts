@@ -26,7 +26,6 @@ export class UserService {
 
       if (existing.rows.length > 0) {
         const user = existing.rows[0];
-        console.log(user);
 
         await client.query(
           `UPDATE "User"
@@ -77,4 +76,31 @@ export class UserService {
       client.release();
     }
   }
+
+  // Новый метод для получения данных о подписке
+  static async getSubscriptionExpiresAt(telegramId: number): Promise<string | null> {
+    const client = await pool.connect();
+    try {
+      // Получаем пользователя и его VPN ключ с датой истечения
+      const result = await client.query(
+        `SELECT "VpnKey"."expiresAt" 
+         FROM "VpnKey"
+         JOIN "User" ON "VpnKey"."userId" = "User".id
+         WHERE "User"."telegramId" = $1
+         ORDER BY "VpnKey"."expiresAt" DESC
+         LIMIT 1`,
+        [telegramId]
+      );
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return result.rows.length > 0 ? result.rows[0].expiresAt : null;
+    } finally {
+      client.release();
+    }
+  }
 }
+
+

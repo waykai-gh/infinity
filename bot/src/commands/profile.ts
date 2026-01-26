@@ -4,7 +4,7 @@ import { UserService } from '../services/user-service/userService.js';
 
 
 export const profile = async (ctx: CallbackQueryContext<MyContext>) => {
-    ctx.answerCallbackQuery('Профиль');
+    ctx.answerCallbackQuery('Профиль⚙');
 
     const args = ctx.match?.toString().trim() || '';
     const referralCode = args || null;
@@ -19,9 +19,9 @@ export const profile = async (ctx: CallbackQueryContext<MyContext>) => {
     const refLink = `https://t.me/${ctx.me.username}?start=${user.ref_code}`;
 
     ctx.callbackQuery.message?.editText(
-      `Твой профиль, ${ctx.from.first_name}!\n\nТвой план: ${user.plan}.\nТвой реф-код: ${user.ref_code}.\nРеф-ссылка: ${refLink}`,
+      `⚙Твой профиль, ${ctx.from.first_name}!\n\n💎Твой план: ${user.plan}.\n🔗🫶Твой реф-код: ${user.ref_code}.\n🔗🫶Реф-ссылка: ${refLink}`,
       {
-        reply_markup: new InlineKeyboard().text('< На главную', 'back'),
+        reply_markup: new InlineKeyboard().text('⬅️ На главную', 'back'),
       });
       await ctx.answerCallbackQuery();
   }

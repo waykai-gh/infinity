@@ -1,27 +1,18 @@
 import { MyContext } from "../types.js";
-import { InlineKeyboard, CallbackQueryContext, Bot } from "grammy";
-import { hydrate } from "@grammyjs/hydrate";
+import { InlineKeyboard, CallbackQueryContext } from "grammy";
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
   throw new Error('BOT_TOKEN is not defined');
 }
-const bot = new Bot<MyContext>(botToken);
 
 export const instruction = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('instruction');
   
     ctx.callbackQuery.message?.editText(
-      `all instructions: https://infinity-ecosys.ru/landing-instruction`,
+      `all instructions🔍: https://infinity-ecosys.ru/landing-instruction`,
       {
-        reply_markup: new InlineKeyboard().text('< На главную', 'back'),
+        reply_markup: new InlineKeyboard().text('⬅️ На главную', 'back'),
       });
       await ctx.answerCallbackQuery();
   }
-
-bot.callbackQuery('linux', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Linux инструкция', {
-    reply_markup: new InlineKeyboard().text('< На главную', 'back'),
-  });
-  await ctx.answerCallbackQuery();
-});

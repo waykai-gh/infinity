@@ -23,9 +23,9 @@ bot.api.setMyCommands([
 ]);
 
 //Клавиатуры меню
-const mainKeyboard = new InlineKeyboard().text('Наши услуги', 'services').text('Профиль', 'profile').row().text('Подписка', 'subscrice').text('Оплата', 'payments').row().text('Инструкции', 'instruction');
-const backKeyboard = new InlineKeyboard().text('< На главную', 'back');
-const serviceKeyboard = new InlineKeyboard().row().text('Infinity AI', 'infinityAI').row().text('Free internet access', 'internetAcces').row().text('Site', 'site').row().text('< На главную', 'back');
+const mainKeyboard = new InlineKeyboard().text('Наши услуги📍', 'services').text('Профиль👤', 'profile').row().text('Подписка✅', 'subscrice').text('Оплата💳', 'payments').row().text('📄Инструкции❓', 'instruction');
+const backKeyboard = new InlineKeyboard().text('⬅️ На главную', 'back');
+const serviceKeyboard = new InlineKeyboard().row().text('Infinity AI🤖', 'infinityAI').row().text('Free internet access🛜', 'internetAcces').row().text('Site🌐', 'site').row().text('⬅️ На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
@@ -46,27 +46,27 @@ bot.callbackQuery('internetAcces', subscrice);
 bot.callbackQuery('instruction', instruction);
 
 bot.callbackQuery('back', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Вы на главной странице', {
+  await ctx.callbackQuery.message?.editText('🖼Возвращаем на главную страницу!\nВыберите один из пунктов меню:', {
     reply_markup: mainKeyboard
   });
   await ctx.answerCallbackQuery();
 });
 
 bot.command('menu', async (ctx) => {
-  await ctx.reply('Главное меню', {
+  await ctx.reply('🖼Вы на главной странице!\nВыберите один из пунктов меню:', {
     reply_markup: mainKeyboard
   });
 });
 
 bot.callbackQuery('services', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Выберите интересующий сервис:', {
+  await ctx.callbackQuery.message?.editText('🔎Выберите интересующий сервис:', {
     reply_markup: serviceKeyboard
   });
   await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery('site', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('Наш сайт: https://infinity-ecosys.ru', {
+  await ctx.callbackQuery.message?.editText('🌐Наш сайт: https://infinity-ecosys.ru', {
     reply_markup: backKeyboard
   });
   await ctx.answerCallbackQuery();

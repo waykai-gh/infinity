@@ -1,5 +1,4 @@
 export * from './subscrice.js';
-export * from './productsCommand.js';
 export * from './payments.js';
 export * from './infinityAI.js';
 export * from './profile.js';

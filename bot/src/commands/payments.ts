@@ -5,9 +5,9 @@ export const payments = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('payments');
   
     ctx.callbackQuery.message?.editText(
-      `Вы сможете оплатить подписку чуть позже...`,
+      `Вы сможете оплатить подписку чуть позже...💸💳`,
       {
-        reply_markup: new InlineKeyboard().text('< На главную', 'back'),
+        reply_markup: new InlineKeyboard().text('⬅️ На главную', 'back'),
       });
       await ctx.answerCallbackQuery();
   }
