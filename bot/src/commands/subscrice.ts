@@ -19,7 +19,7 @@ export async function subscrice(ctx: CallbackQueryContext<MyContext>) {
 
     // Шаг 3: Форматировать дату для вывода
     const expiresAtText = expiresAt 
-      ? new Date(expiresAt).toLocaleString('ru-RU') + ', данные защищены🔐✅' 
+      ? new Date(expiresAt).toLocaleString('ru-RU') + '\nДанные защищены🔐✅' 
       : 'Нет активной подписки, данные не защищены❌🔓';
 
     // Формируем subscription URL
