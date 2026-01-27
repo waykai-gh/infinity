@@ -59,7 +59,7 @@ bot.command('menu', async (ctx) => {
 });
 
 bot.callbackQuery('services', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('🔎Выберите интересующий сервис:', {
+  await ctx.callbackQuery.message?.editText('🔎Выберите вас интересующий сервис:', {
     reply_markup: serviceKeyboard
   });
   await ctx.answerCallbackQuery();
