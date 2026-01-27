@@ -66,7 +66,7 @@ bot.callbackQuery('services', async (ctx) => {
 });
 
 bot.callbackQuery('site', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('🌐Наш сайт: https://infinity-ecosys.ru', {
+  await ctx.callbackQuery.message?.editText('🌐Наш сайт: https://infinity-ecosys.ru/landing-instruction', {
     reply_markup: backKeyboard
   });
   await ctx.answerCallbackQuery();
