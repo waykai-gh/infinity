@@ -37,7 +37,7 @@ export class VpnService {
       case 'KZ':
         return 'www.aikyn.kz';
       case 'KR':
-        return 'images.apple.com';
+        return 'bioenergywiki.net';
       case 'NL':
         return 'gitlab.com';
     }
