@@ -1,15 +1,4 @@
 services:
-  ai-service-backend:
-    build: ./backend/ai-service-backend
-    image: ai-service-backend
-    container_name: ai-service-backend
-    env_file:
-      - ./backend/ai-service-backend/.env    
-    network_mode: host
-    depends_on:
-      - ollama
-      - db
-    restart: unless-stopped
   bot:
     build: ./bot
     image: telegram-bot 
@@ -40,36 +29,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  xor-bot:
-    build: ./xor-bot
-    image: xor-bot
-    container_name: telegram-xor-bot
-    env_file:
-      - ./xor-bot/.env
-    network_mode: host
-    depends_on:
-      - ai-service-backend 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    network_mode: host
-    # Для CPU-деплоя достаточно так. Если есть GPU и нужна поддержка:
-    # runtime: nvidia
-    # environment:
-    #   - NVIDIA_VISIBLE_DEVICES=all
-    volumes:
-      - ollama:/root/.ollama
-    # Не публикуем 11434 наружу
-    # ports:
-    #   - "11434:11434"
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
-      interval: 10s
-      timeout: 3s
-      retries: 20
 volumes:
   db_data:
-  ollama:
 
 networks:
   app-network:
