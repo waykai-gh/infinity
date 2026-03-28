@@ -9,5 +9,5 @@ import { Pool } from 'pg';
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 10_000,
 });
-console.log('DB Password:', process.env.DB_PASSWORD ? 'SET' : 'MISSING');

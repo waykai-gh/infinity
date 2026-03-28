@@ -1,6 +1,7 @@
 // src/services/user-service/userService.ts
 import { pool } from '../db-service/db.js';
 import crypto from 'crypto';
+import { resolveTier, type Tier } from '../../config/access.js';
 
 function generateRefCode(): string {
   // 8 символов A-Z0-9
@@ -18,6 +19,8 @@ export class UserService {
     try {
       await client.query('BEGIN');
 
+      const tier: Tier = resolveTier(telegramId);
+
       // 1. Ищем пользователя
       const existing = await client.query(
         `SELECT * FROM "User" WHERE "telegramId" = $1`,
@@ -25,19 +28,19 @@ export class UserService {
       );
 
       if (existing.rows.length > 0) {
-        const user = existing.rows[0];
-
-        await client.query(
+        const updated = await client.query(
           `UPDATE "User"
            SET last_login_at = NOW(),
                username = COALESCE($2, username),
-               language = COALESCE($3, language)
-           WHERE "telegramId" = $1`,
-          [telegramId, username ?? null, languageCode ?? null],
+               language = COALESCE($3, language),
+               plan = $4
+           WHERE "telegramId" = $1
+           RETURNING *`,
+          [telegramId, username ?? null, languageCode ?? null, tier],
         );
 
         await client.query('COMMIT');
-        return user;
+        return updated.rows[0];
       }
 
       // 2. Обрабатываем реферальный код, если он передан
@@ -60,9 +63,9 @@ export class UserService {
         `INSERT INTO "User"
          ("telegramId", username, plan, status, language,
           ref_code, referred_by, last_login_at)
-         VALUES ($1, $2, 'free', 'active', $3, $4, $5, NOW())
+         VALUES ($1, $2, $3, 'active', $4, $5, $6, NOW())
          RETURNING *`,
-        [telegramId, username ?? null, languageCode ?? null, refCode, referredBy],
+        [telegramId, username ?? null, tier, languageCode ?? null, refCode, referredBy],
       );
 
 
@@ -72,31 +75,6 @@ export class UserService {
     } catch (e) {
       await client.query('ROLLBACK');
       throw e;
-    } finally {
-      client.release();
-    }
-  }
-
-  // Новый метод для получения данных о подписке
-  static async getSubscriptionExpiresAt(telegramId: number): Promise<string | null> {
-    const client = await pool.connect();
-    try {
-      // Получаем пользователя и его VPN ключ с датой истечения
-      const result = await client.query(
-        `SELECT "VpnKey"."expiresAt" 
-         FROM "VpnKey"
-         JOIN "User" ON "VpnKey"."userId" = "User".id
-         WHERE "User"."telegramId" = $1
-         ORDER BY "VpnKey"."expiresAt" DESC
-         LIMIT 1`,
-        [telegramId]
-      );
-
-      if (result.rows.length === 0) {
-        return null;
-      }
-
-      return result.rows.length > 0 ? result.rows[0].expiresAt : null;
     } finally {
       client.release();
     }

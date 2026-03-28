@@ -1,11 +1,6 @@
 import { MyContext } from "../types.js";
 import { InlineKeyboard, CallbackQueryContext } from "grammy";
 
-const botToken = process.env.BOT_TOKEN;
-if (!botToken) {
-  throw new Error('BOT_TOKEN is not defined');
-}
-
 export const instruction = async (ctx: CallbackQueryContext<MyContext>) => {
     ctx.answerCallbackQuery('instruction');
   

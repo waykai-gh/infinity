@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { GrammyError, HttpError, InlineKeyboard, Bot } from 'grammy';
-import { MyContext } from './types.js'; 
+import { MyContext } from './types.js';
 import { hydrate } from '@grammyjs/hydrate';
-import { profile, subscrice, infinityAI, payments, start, instruction} from './commands/exports.js';
-import './http/index.js';
+import { profile, keys, start, instruction } from './commands/exports.js';
+import { loadAccessConfig, prefetchAccessDatabase } from './config/access.js';
 
 const botToken = process.env.BOT_TOKEN;
 if (!botToken) {
@@ -17,15 +17,14 @@ bot.api.setMyCommands([
     description: 'Нажмите для регистрации',
   },
   {
-    command: 'menu',
-    description: 'Меню и услуги',
+    command: 'keys',
+    description: 'Ключи безопасности',
   },
 ]);
 
 //Клавиатуры меню
-const mainKeyboard = new InlineKeyboard().text('Наши услуги📍', 'services').text('Профиль👤', 'profile').row().text('Подписка✅', 'subscrice').text('Оплата💳', 'payments').row().text('📄Инструкции❓', 'instruction');
+const mainKeyboard = new InlineKeyboard().text('Профиль👤', 'profile').row().text('Ключи✅', 'keys').row().text('📄Инструкции❓', 'instruction');
 const backKeyboard = new InlineKeyboard().text('⬅️ На главную', 'back');
-const serviceKeyboard = new InlineKeyboard().row().text('Infinity AI🤖', 'infinityAI').row().text('Free internet access🛜', 'internetAcces').row().text('Site🌐', 'site').row().text('⬅️ На главную', 'back');
 
 // Добавляем middleware для обработки команд
 bot.use(hydrate());
@@ -33,15 +32,9 @@ bot.use(hydrate());
 // Обработчик команды /start
 bot.command('start', start);
 
-bot.callbackQuery('subscrice', subscrice);
+bot.callbackQuery('keys', keys);
 
 bot.callbackQuery('profile', profile);
-
-bot.callbackQuery('infinityAI', infinityAI);
-
-bot.callbackQuery('payments', payments);
-
-bot.callbackQuery('internetAcces', subscrice);
 
 bot.callbackQuery('instruction', instruction);
 
@@ -58,19 +51,6 @@ bot.command('menu', async (ctx) => {
   });
 });
 
-bot.callbackQuery('services', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('🔎Выберите вас интересующий сервис:', {
-    reply_markup: serviceKeyboard
-  });
-  await ctx.answerCallbackQuery();
-});
-
-bot.callbackQuery('site', async (ctx) => {
-  await ctx.callbackQuery.message?.editText('🌐Наш сайт: https://infinity-ecosys.ru/landing-instruction', {
-    reply_markup: backKeyboard
-  });
-  await ctx.answerCallbackQuery();
-});
 // Обработка ошибок согласно документации
 bot.catch((err) => {
   const ctx = err.ctx;
@@ -86,13 +66,15 @@ bot.catch((err) => {
   }
 });
 
-// Функция запуска бота
 async function startBot() {
   try {
+    await prefetchAccessDatabase();
+    loadAccessConfig();
     bot.start();
     console.log('Bot started');
   } catch (error) {
     console.error('Error in startBot:', error);
+    process.exit(1);
   }
 }
 

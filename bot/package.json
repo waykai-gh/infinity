@@ -4,29 +4,23 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "postinstall": "echo 'skip prisma generate in docker build'",
+    "postinstall": "echo 'postinstall complete'",
     "build": "tsc",
     "dev": "nodemon --exec tsx src/index.ts",
-    "start:prod": "node dist/index.js"
+    "start:prod": "node dist/index.js",
+    "test:config": "tsx src/scripts/testAccessConfig.ts"
   },
   "dependencies": {
     "@grammyjs/hydrate": "^1.6.0",
-    "@remnawave/xtls-sdk": "^0.8.0",
-    "@types/express": "^5.0.6",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1",
     "grammy": "^1.38.3",
     "nodemon": "^3.1.9",
     "pg": "^8.16.3",
-    "telegraf": "^4.16.3",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@prisma/client": "^7.1.0",
     "@types/node": "^24.10.3",
-    "@types/node-fetch": "^2.6.13",
     "@types/pg": "^8.16.0",
-    "prisma": "^7.1.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }
